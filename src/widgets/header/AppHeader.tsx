@@ -3,16 +3,20 @@ import { Link, NavLink } from 'react-router-dom'
 
 import { env } from '../../shared/config/env'
 import { routes } from '../../shared/config/routes'
+import { useAuthStore } from '../../shared/store/useAuthStore'
 import { Button } from '../../shared/ui/Button'
-
-const navItems = [
-  { to: routes.home, label: '홈' },
-  { to: routes.workspace, label: '워크스페이스' },
-  { to: routes.projects, label: '프로젝트' },
-]
 
 export function AppHeader() {
   const appName = env.appName
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const userNavItems = isAuthenticated
+    ? [
+        { to: `${routes.home}?section=projects`, label: '프로젝트' },
+        { to: `${routes.home}?section=voice-samples`, label: '보이스 샘플' },
+        { to: `${routes.home}?section=guide`, label: '이용 가이드' },
+        { to: `${routes.home}?section=support`, label: '문의' },
+      ]
+    : []
 
   return (
     <header className="border-surface-3 bg-surface-1/90 sticky top-0 z-40 border-b backdrop-blur">
@@ -28,27 +32,39 @@ export function AppHeader() {
             <span className="text-foreground text-base font-medium">{appName}</span>
           </div>
         </Link>
-        <nav className="hidden items-center gap-4 md:flex">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `text-sm font-medium transition ${isActive ? 'text-primary' : 'text-muted hover:text-foreground'}`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="flex items-center gap-3">
-          <Button asChild variant="outline" size="sm">
-            <Link to={routes.login}>로그인</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link to={routes.signup}>회원가입</Link>
-          </Button>
-        </div>
+        {userNavItems.length > 0 ? (
+          <nav className="hidden items-center gap-4 md:flex">
+            {userNavItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `text-sm font-medium transition ${isActive ? 'text-primary' : 'text-muted hover:text-foreground'}`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+        ) : (
+          <span className="hidden md:block" />
+        )}
+        {isAuthenticated ? (
+          <div className="hidden items-center gap-3 md:flex">
+            <Button asChild variant="secondary" size="sm">
+              <Link to={`${routes.home}?section=support`}>문의하기</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Button asChild variant="outline" size="sm">
+              <Link to={routes.login}>로그인</Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link to={routes.signup}>회원가입</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </header>
   )

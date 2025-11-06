@@ -5,9 +5,11 @@ import { Link } from 'react-router-dom'
 
 import { routes } from '../../shared/config/routes'
 import { trackEvent } from '../../shared/lib/analytics'
+import { useAuthStore } from '../../shared/store/useAuthStore'
 import { Button } from '../../shared/ui/Button'
 import { Card, CardDescription, CardHeader, CardTitle } from '../../shared/ui/Card'
 import { TabsContent, TabsList, TabsRoot, TabsTrigger } from '../../shared/ui/Tabs'
+import WorkspacePage from '../workspace/WorkspacePage'
 
 type SampleLanguage = 'ko' | 'ja' | 'es'
 
@@ -34,6 +36,11 @@ function SampleVideoMock({ language }: { language: SampleLanguage }) {
 
 export default function HomePage() {
   const [language, setLanguage] = useState<SampleLanguage>('ko')
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+
+  if (isAuthenticated) {
+    return <WorkspacePage />
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-6 py-16">

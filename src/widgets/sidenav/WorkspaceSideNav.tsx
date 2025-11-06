@@ -1,4 +1,4 @@
-import { BookOpen, FolderKanban, UploadCloud } from 'lucide-react'
+import { BookOpenCheck, FolderKanban, LifeBuoy, MessagesSquare, Waves } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
 import { routes } from '../../shared/config/routes'
@@ -7,35 +7,50 @@ import { cn } from '../../shared/lib/utils'
 const navItems = [
   {
     icon: FolderKanban,
-    label: '프로젝트',
-    to: routes.workspace,
+    label: '프로젝트 목록',
+    id: 'projects',
   },
   {
-    icon: UploadCloud,
+    icon: Waves,
     label: '보이스 샘플',
-    to: `${routes.workspace}?section=voices`,
+    id: 'voice-samples',
   },
   {
-    icon: BookOpen,
+    icon: BookOpenCheck,
     label: '용어 사전',
-    to: `${routes.workspace}?section=glossary`,
+    id: 'glossary',
+  },
+  {
+    icon: MessagesSquare,
+    label: '이용 가이드',
+    id: 'guide',
+  },
+  {
+    icon: LifeBuoy,
+    label: '문의',
+    id: 'support',
   },
 ]
 
 export function WorkspaceSideNav() {
   const location = useLocation()
+  const params = new URLSearchParams(location.search)
+  const activeSection = params.get('section') ?? 'projects'
+  const basePath = location.pathname.startsWith(routes.workspace) ? routes.workspace : routes.home
 
   return (
     <nav className="flex flex-col gap-2">
       {navItems.map((item) => {
         const Icon = item.icon
-        const isActive =
-          location.pathname === routes.workspace &&
-          location.search.includes(item.to.split('?')[1] ?? '')
+        const isActive = activeSection === item.id
+        const to =
+          item.id === 'projects'
+            ? `${basePath}?section=${item.id}`
+            : `${basePath}?section=${item.id}`
         return (
           <Link
             key={item.label}
-            to={item.to}
+            to={to}
             className={cn(
               'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition',
               isActive
