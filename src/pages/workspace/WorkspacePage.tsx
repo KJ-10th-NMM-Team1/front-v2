@@ -24,13 +24,10 @@ type WorkspaceSection = 'projects' | 'voice-samples' | 'glossary' | 'guide' | 's
 export default function WorkspacePage() {
   const { data: projects = [], isLoading } = useProjects()
   const [searchParams, setSearchParams] = useSearchParams()
-  const uiState = useUiStore((state) => ({
-    open: state.projectCreation.open,
-    step: state.projectCreation.step,
-    openModal: state.openProjectCreation,
-    setStep: state.setProjectCreationStep,
-    close: state.closeProjectCreation,
-  }))
+  const isModalOpen = useUiStore((state) => state.projectCreation.open)
+  const modalStep = useUiStore((state) => state.projectCreation.step)
+  const openProjectCreation = useUiStore((state) => state.openProjectCreation)
+  const closeProjectCreation = useUiStore((state) => state.closeProjectCreation)
 
   const stepParam = searchParams.get('create')
   const derivedStep = stepParam ? stepMap[stepParam as keyof typeof stepMap] : null
@@ -70,30 +67,30 @@ export default function WorkspacePage() {
 
   useEffect(() => {
     if (derivedStep) {
-      uiState.openModal(derivedStep)
+      openProjectCreation(derivedStep)
     }
-  }, [derivedStep, uiState])
+  }, [derivedStep, openProjectCreation])
 
   useEffect(() => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev)
-      if (!uiState.open) {
+      if (!isModalOpen) {
         next.delete('create')
       } else {
-        const currentKey = Object.entries(stepMap).find(([, value]) => value === uiState.step)?.[0]
+        const currentKey = Object.entries(stepMap).find(([, value]) => value === modalStep)?.[0]
         if (currentKey) {
           next.set('create', currentKey)
         }
       }
       return next
     })
-  }, [uiState.open, uiState.step, setSearchParams])
+  }, [isModalOpen, modalStep, setSearchParams])
 
   useEffect(() => {
     if (!stepParam) {
-      uiState.close()
+      closeProjectCreation()
     }
-  }, [stepParam, uiState])
+  }, [stepParam, closeProjectCreation])
 
   useEffect(() => {
     if (!sectionParam) {
@@ -235,7 +232,7 @@ export default function WorkspacePage() {
   }
 
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-12 lg:grid-cols-[280px,1fr]">
+    <div className="mx-auto grid w-full gap-10 px-6 py-12 lg:grid-cols-[280px,1fr]">
       <aside>
         <WorkspaceSideNav />
       </aside>

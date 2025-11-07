@@ -21,7 +21,7 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-12">
+    <div className="mx-auto flex w-full flex-col gap-8 px-6 py-12">
       <header className="space-y-2">
         <p className="text-muted text-xs font-semibold uppercase tracking-wider">편집자 전용</p>
         <h1 className="text-foreground text-3xl font-semibold">더빙 편집 스튜디오</h1>

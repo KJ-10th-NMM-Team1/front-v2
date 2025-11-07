@@ -43,7 +43,7 @@ export function WorkspaceSideNav() {
       {navItems.map((item) => {
         const Icon = item.icon
         const isActive = activeSection === item.id
-        const to = item.id === 'projects' ? `${basePath}/${item.id}` : `${basePath}/${item.id}`
+        const to = `${basePath}?section=${item.id}`
         return (
           <Link
             key={item.label}

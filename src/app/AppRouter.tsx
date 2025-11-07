@@ -19,6 +19,7 @@ const ProjectsListPage = lazy(() => import('../pages/projects/ProjectsListPage')
 const ProjectDetailPage = lazy(() => import('../pages/projects/ProjectDetailPage'))
 const EditorPage = lazy(() => import('../pages/editor/EditorPage'))
 const ExampleCrudPage = lazy(() => import('../pages/example/ExampleCrudPage'))
+const ModalExamplePage = lazy(() => import('../pages/example/ModalExamplePage'))
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))
 
 const router = createBrowserRouter(
@@ -36,6 +37,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path="editor/:id" element={<EditorPage />} />
       <Route path="example" element={<ExampleCrudPage />} />
+      <Route path="example/modal" element={<ModalExamplePage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Route>,
   ),

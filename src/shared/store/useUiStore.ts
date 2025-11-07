@@ -1,8 +1,9 @@
+import { toast } from 'sonner'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
 type ToastPayload = {
-  id: string
+  id?: string
   title?: string
   description?: string
   actionLabel?: string
@@ -13,7 +14,6 @@ type ToastPayload = {
 type ProjectCreationStep = 'upload' | 'settings-a' | 'settings-b'
 
 type UiState = {
-  activeToast: ToastPayload | null
   showToast: (toast: ToastPayload) => void
   dismissToast: (id: string) => void
   projectCreation: {
@@ -27,23 +27,23 @@ type UiState = {
 
 export const useUiStore = create<UiState>()(
   devtools((set) => ({
-    activeToast: null,
-    showToast: (toast) =>
-      set(
-        {
-          activeToast: toast,
-        },
-        false,
-        { type: 'ui/showToast' },
-      ),
-    dismissToast: (id) =>
-      set(
-        (state) => ({
-          activeToast: state.activeToast?.id === id ? null : state.activeToast,
-        }),
-        false,
-        { type: 'ui/dismissToast' },
-      ),
+    showToast: ({ id, title, description, actionLabel, onAction, autoDismiss }) => {
+      toast(title ?? '알림', {
+        id,
+        description,
+        duration: autoDismiss ?? 3500,
+        action:
+          actionLabel && onAction
+            ? {
+                label: actionLabel,
+                onClick: onAction,
+              }
+            : undefined,
+      })
+    },
+    dismissToast: (id) => {
+      toast.dismiss(id)
+    },
     projectCreation: {
       open: false,
       step: 'upload',
