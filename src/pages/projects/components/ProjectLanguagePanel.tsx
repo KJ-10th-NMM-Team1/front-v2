@@ -40,6 +40,7 @@ export function ProjectLanguagePanel({
               assets={assetsByLanguage[lang] ?? []}
               version={version}
               onVersionChange={onVersionChange}
+              videoSource={project.video_source}
             />
           </TabsContent>
         ))}
@@ -53,10 +54,20 @@ type LanguagePreviewProps = {
   assets: ProjectAsset[]
   version: 'original' | 'translated'
   onVersionChange: (version: 'original' | 'translated') => void
+  videoSource?: string
 }
 
-function LanguagePreview({ language, assets, version, onVersionChange }: LanguagePreviewProps) {
+function LanguagePreview({
+  language,
+  assets,
+  version,
+  onVersionChange,
+  videoSource,
+}: LanguagePreviewProps) {
   const selectedAsset = assets.find((asset) => asset.type === 'video')
+  const translatedSource = selectedAsset?.url
+  const previewSource = version === 'original' ? videoSource : (translatedSource ?? videoSource)
+  const videoSrc = `/api/storage/media/${previewSource}`
 
   return (
     <div className="space-y-4">
@@ -79,10 +90,21 @@ function LanguagePreview({ language, assets, version, onVersionChange }: Languag
         </div>
       </div>
       <div className="border-surface-3 bg-surface-1 relative overflow-hidden rounded-3xl border">
-        <div className="bg-surface-2 text-muted flex h-64 flex-col items-center justify-center gap-3">
-          <Play className="h-8 w-8" />
-          <p className="text-sm">더빙 영상 미리보기 (모의)</p>
-        </div>
+        {previewSource ? (
+          <video
+            key={`${language}-${version}`}
+            controls
+            className="h-96 w-full bg-black object-cover"
+            src={videoSrc}
+          >
+            <track kind="captions" />
+          </video>
+        ) : (
+          <div className="bg-surface-2 text-muted flex h-64 flex-col items-center justify-center gap-3">
+            <Play className="h-8 w-8" />
+            <p className="text-sm">더빙 영상 미리보기 (모의)</p>
+          </div>
+        )}
         {selectedAsset ? (
           <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-xs text-white">
             <span>{selectedAsset.codec}</span>

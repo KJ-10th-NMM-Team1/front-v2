@@ -10,6 +10,7 @@ export interface ProjectSummary {
   dueDate: string
   assignedEditor?: string
   createdAt?: string
+  video_source?: string
 }
 
 export interface ProjectAsset {
@@ -46,7 +47,6 @@ export interface ProjectDetail extends ProjectSummary {
 }
 
 export interface ProjectResponse extends ProjectDetail {
-  // pass?: undefined
   project_id: string
 }
 
@@ -58,15 +58,12 @@ export interface PrepareUploadPayload {
   projectId: string
   fileName: string
   contentType: string
-  owner_code: string
-  // fileSize?: number
-  // fileType?: string
 }
 
 export interface PrepareUploadResponse {
-  projectId: string
-  uploadUrl: string
-  objectKey: string
+  project_id: string
+  upload_url: string
+  object_key: string
   fields?: Record<string, string>
 }
 
@@ -76,6 +73,16 @@ export interface RegisterYoutubeSourcePayload {
 }
 
 export interface RegisterYoutubeSourceResponse {
+  projectId: string
+  status: ProjectStatus
+}
+
+export interface FinishUploadPayload {
+  projectId: string
+  objectKey: string
+}
+
+export interface FinishUploadResponse {
   projectId: string
   status: ProjectStatus
 }

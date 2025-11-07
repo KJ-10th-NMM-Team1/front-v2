@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 import type { ProjectDetail, ProjectPayload, ProjectsResponse } from '@/entities/project/types'
 import { apiGet } from '@/shared/api/client'
@@ -13,7 +13,7 @@ export function useProjects() {
     queryFn: () => apiGet<ProjectsResponse>('api/projects'),
     select: (data) => data.items,
     placeholderData: (previous) => previous,
-    enabled: false,
+    // enabled: false,
   })
 }
 

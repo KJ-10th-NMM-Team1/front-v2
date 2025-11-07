@@ -7,6 +7,7 @@ export type SourceSelectionResult = {
 export type ProjectCreationDraft = {
   sourceType: 'youtube' | 'file'
   youtubeUrl?: string
+  file?: File
   fileName?: string
   fileSize?: number
   title: string

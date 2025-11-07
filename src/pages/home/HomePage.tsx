@@ -55,7 +55,7 @@ export default function HomePage() {
   const activeSample = samples[language]
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-6 py-16">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-6 py-16">
       <section className="space-y-10 lg:space-y-14">
         <div className="space-y-6 text-center">
           <h1 className="text-foreground text-balance text-4xl font-semibold leading-tight md:text-5xl">

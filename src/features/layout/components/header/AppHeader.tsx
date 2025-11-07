@@ -21,7 +21,7 @@ export function AppHeader() {
   const navigate = useNavigate()
   const isWideLayout =
     location.pathname.startsWith('/workspace') || location.pathname.startsWith('/editor')
-  const containerWidthClass = isWideLayout ? 'max-w-[1920px]' : 'max-w-6xl'
+  const containerWidthClass = isWideLayout ? 'max-w-[1920px]' : 'max-w-7xl'
   const initials =
     userName
       ?.split(' ')

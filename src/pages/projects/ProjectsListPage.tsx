@@ -21,7 +21,7 @@ export default function ProjectsListPage() {
   const [activeTab, setActiveTab] = useState('assigned')
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-12">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-12">
       <header className="space-y-4">
         <h1 className="text-foreground text-3xl font-semibold">에피소드 목록</h1>
         <p className="text-muted text-sm">

@@ -29,7 +29,7 @@ export function EpisodeCard({ project }: { project: ProjectSummary }) {
       <div className="space-y-2 p-4">
         <div className="space-y-1">
           <p className="text-muted text-xs">
-            사용 언어: {project.sourceLanguage} → {project.targetLanguages.join(', ')}
+            사용 언어: {project.sourceLanguage} → {(project.targetLanguages ?? []).join(', ')}
           </p>
         </div>
         <div className="flex items-center gap-3">

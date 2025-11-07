@@ -22,7 +22,7 @@ export default function ProjectDetailPage() {
 
   const assetsByLanguage = useMemo(() => {
     if (!project) return {}
-    return project.assets.reduce<Record<string, typeof project.assets>>((acc, asset) => {
+    return (project.assets ?? []).reduce<Record<string, typeof project.assets>>((acc, asset) => {
       acc[asset.language] = acc[asset.language] ? [...acc[asset.language], asset] : [asset]
       return acc
     }, {})
@@ -50,7 +50,7 @@ export default function ProjectDetailPage() {
 
   const activeLanguage = language ?? project.targetLanguages[0] ?? project.sourceLanguage
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-12">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-12">
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-muted text-xs font-semibold uppercase tracking-wider">프로젝트 상세</p>
@@ -75,7 +75,7 @@ export default function ProjectDetailPage() {
         ) : null}
       </header>
 
-      <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
+      <section className="grid gap-6 lg:grid-cols-[1.5fr,1fr]">
         <ProjectLanguagePanel
           project={project}
           activeLanguage={activeLanguage}
