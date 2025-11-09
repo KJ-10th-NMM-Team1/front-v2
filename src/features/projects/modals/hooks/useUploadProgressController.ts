@@ -35,6 +35,22 @@ const isUploadProgressEvent = (payload: unknown): payload is UploadProgressEvent
   return true
 }
 
+const statusMessageMap: Record<string, string> = {
+  queued: '순서를 기다리는 중',
+  downloading: '콘텐츠 다운로드 중',
+  uploaded: '업로드 완료',
+  finished: '마무리 중',
+  finalizing: '업로드 마무리 중',
+  processing: '처리 중',
+  done: '완료되었습니다.',
+  error: '오류가 발생했습니다.',
+}
+
+const toLocalizedStatus = (status?: string) => {
+  if (!status) return undefined
+  return statusMessageMap[status.toLowerCase()] ?? status
+}
+
 type UseUploadProgressControllerOptions = {
   projectCreationOpen: boolean
   onComplete: () => void
@@ -88,10 +104,11 @@ export function useUploadProgressController({
             (prev.stage === 'idle' ? 'processing' : prev.stage)
           const isDone = parsed.stage === 'done'
           const nextProgress = typeof parsed.progress === 'number' ? parsed.progress : prev.progress
+          const localizedStatus = toLocalizedStatus(parsed.status)
           return {
             stage: isDone ? 'done' : nextStage,
             progress: isDone ? 100 : nextProgress,
-            message: parsed.status ?? prev.message ?? stageMessageMap[nextStage],
+            message: localizedStatus ?? prev.message ?? stageMessageMap[nextStage],
           }
         })
 
