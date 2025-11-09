@@ -122,7 +122,7 @@ export function AutoDubbingSettingsStep({
 
   const isProcessing =
     uploadProgress.stage !== 'idle' &&
-    uploadProgress.stage !== 'done' &&
+    // uploadProgress.stage !== 'done' &&
     uploadProgress.stage !== 'error'
   const progressLabel = uploadProgress.message ?? stageMessageMap[uploadProgress.stage]
 
