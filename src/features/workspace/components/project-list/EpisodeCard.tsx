@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import type { Language } from '@/entities/language/types'
 import type { ProjectSummary, ProjectTarget } from '@/entities/project/types'
 import { useLanguage } from '@/features/languages/hooks/useLanguage'
+import { env } from '@/shared/config/env'
 import { routes } from '@/shared/config/routes'
 import { formatPercent } from '@/shared/lib/utils'
 import { Progress } from '@/shared/ui/Progress'
@@ -98,6 +99,10 @@ export function EpisodeCard({ project }: { project: ProjectSummary }) {
   const sourceLangLabel = languageMap[project.sourceLanguage] ?? project.sourceLanguage
   const targetLangLabels =
     project.targets?.map((target) => languageMap[target.languageCode] ?? target.languageCode) ?? []
+  const thumbnaileUrl =
+    project.thumbnail?.kind === 's3'
+      ? `https://${env.awsS3Bucket}.s3.${env.awsRegion}.amazonaws.com/${project.thumbnail.key}`
+      : project.thumbnail?.url
 
   return (
     <Link
@@ -105,11 +110,11 @@ export function EpisodeCard({ project }: { project: ProjectSummary }) {
       className="border-surface-3 bg-surface-1/95 focus-visible:outline-hidden hover:border-primary/60 block overflow-hidden rounded-3xl border shadow-soft transition hover:-translate-y-0.5 hover:shadow-xl"
     >
       <div className="relative aspect-video overflow-hidden">
-        {project.thumbnailUrl ? (
+        {project.thumbnail ? (
           <img
-            src={project.thumbnailUrl}
-            alt={`${project.title} thumbnail`}
-            className="h-full w-full object-cover"
+            src={thumbnaileUrl}
+            alt={''}
+            className="absolute inset-0 h-full w-full object-cover"
           />
         ) : (
           <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-80`} />

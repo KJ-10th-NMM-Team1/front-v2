@@ -23,13 +23,13 @@ export function usePrepareUploadMutation() {
 }
 
 export function useRegisterYoutubeSourceMutation() {
-  const queryClient = useQueryClient()
+  // const queryClient = useQueryClient()
   return useMutation<RegisterYoutubeSourceResponse, Error, RegisterYoutubeSourcePayload>({
     mutationKey: ['projects', 'register-youtube'],
     mutationFn: registerYoutubeSource,
-    onSuccess() {
-      void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
-    },
+    // onSuccess() {
+    // void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
+    // },
   })
 }
 

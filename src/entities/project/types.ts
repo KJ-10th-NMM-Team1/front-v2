@@ -6,6 +6,12 @@ export type ProjectStatus =
   | 'completed'
   | 'failed'
 
+interface ProjectThumbnail {
+  kind: 's3' | 'external'
+  key: string
+  url: string
+}
+
 export interface ProjectSummary {
   id: string
   title: string
@@ -19,6 +25,7 @@ export interface ProjectSummary {
   thumbnailUrl?: string
   durationSeconds?: number
   targets?: ProjectTarget[]
+  thumbnail?: ProjectThumbnail
 }
 
 export type ProjectTargetStatus = 'pending' | 'processing' | 'completed' | 'failed'

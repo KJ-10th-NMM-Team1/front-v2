@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
+import { useQueryClient } from '@tanstack/react-query'
+
 import { uploadFile } from '@/features/projects/api/storageApi'
 import { useCreateProjectMutation } from '@/features/projects/hooks/useProjects'
 import {
@@ -7,6 +9,7 @@ import {
   usePrepareUploadMutation,
   useRegisterYoutubeSourceMutation,
 } from '@/features/projects/hooks/useProjectStorage'
+import { queryKeys } from '@/shared/config/queryKeys'
 import { trackEvent } from '@/shared/lib/analytics'
 import { useUiStore } from '@/shared/store/useUiStore'
 
@@ -34,6 +37,7 @@ export function useProjectCreationModal() {
   const prepareUploadMutation = usePrepareUploadMutation()
   const finalizeUploadMutation = useFinalizeUploadMutation()
   const registerYoutubeSourceMutation = useRegisterYoutubeSourceMutation()
+  const queryClient = useQueryClient()
 
   const [draft, setDraft] = useState<ProjectCreationDraft>(() => createInitialDraft())
 
@@ -54,6 +58,7 @@ export function useProjectCreationModal() {
 
   const showToast = useUiStore((state) => state.showToast)
   const finishCreation = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.projects.all })
     setTimeout(() => {
       closeProjectCreation()
       showToast({
@@ -62,7 +67,7 @@ export function useProjectCreationModal() {
         autoDismiss: 2500,
       })
     }, 400)
-  }, [closeProjectCreation, showToast])
+  }, [closeProjectCreation, showToast, queryClient])
   const { uploadProgress, updateProgress, handleProgressError, startTrackingProject } =
     useUploadProgressController({
       projectCreationOpen: projectCreation.open,
