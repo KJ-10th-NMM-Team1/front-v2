@@ -77,6 +77,9 @@ importers:
       tailwind-merge:
         specifier: ^2.5.3
         version: 2.6.0
+      typescript-eslint:
+        specifier: ^8.46.3
+        version: 8.46.3(eslint@9.39.1(jiti@1.21.7))(typescript@5.6.3)
       zod:
         specifier: ^3.23.8
         version: 3.25.76
