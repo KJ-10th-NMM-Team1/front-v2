@@ -149,6 +149,7 @@ export function useProjectCreationModal() {
     }
     setDraft(nextDraft)
 
+    updateProgress('processing', 0)
     createProjectMutation.mutate(
       { ...nextDraft, owner_code: 'temp' },
       {
