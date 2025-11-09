@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), tsconfigPaths()],
     server: {
       port: 5173,
+      allowedHosts: ['app.dupilot.store'],
       open: true,
       proxy: {
         '/api': {

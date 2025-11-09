@@ -1,4 +1,10 @@
-export type ProjectStatus = 'processing' | 'editing' | 'review' | 'done'
+export type ProjectStatus =
+  | 'uploading'
+  | 'processing'
+  | 'uploaded'
+  | 'editing'
+  | 'completed'
+  | 'failed'
 
 export interface ProjectSummary {
   id: string
@@ -6,11 +12,23 @@ export interface ProjectSummary {
   sourceLanguage: string
   targetLanguages: string[]
   status: ProjectStatus
-  progress: number
   dueDate: string
   assignedEditor?: string
   createdAt?: string
   video_source?: string
+  thumbnailUrl?: string
+  durationSeconds?: number
+  targets?: ProjectTarget[]
+}
+
+export type ProjectTargetStatus = 'pending' | 'processing' | 'completed' | 'failed'
+
+export interface ProjectTarget {
+  id: string
+  projectId: string
+  languageCode: string
+  status: ProjectTargetStatus
+  progress: number
 }
 
 export interface ProjectAsset {
@@ -29,7 +47,6 @@ export interface ProjectPayload {
   sourceType: 'file' | 'youtube'
   detectAutomatically: boolean
   sourceLanguage?: string | null
-  targetLanguages: string[]
   speakerCount: number
   youtubeUrl?: string
   fileName?: string
@@ -91,10 +108,9 @@ export const sampleProjects: ProjectDetail[] = [
   {
     id: 'proj-1001',
     title: 'AI Voice-over Launch Trailer',
-    sourceLanguage: 'English',
-    targetLanguages: ['Korean', 'Japanese', 'Spanish'],
-    status: 'editing',
-    progress: 56,
+    sourceLanguage: 'ko',
+    targetLanguages: ['en', 'ja'],
+    status: 'completed',
     dueDate: '2025-02-06',
     assignedEditor: 'translator-amy',
     description:
@@ -114,7 +130,7 @@ export const sampleProjects: ProjectDetail[] = [
       },
       {
         id: 'asset-jp-video',
-        language: 'Japanese',
+        language: 'ja',
         type: 'video',
         url: '/assets/sample-video-jp.mp4',
         duration: 126,
@@ -133,14 +149,32 @@ export const sampleProjects: ProjectDetail[] = [
         sizeMb: 212,
       },
     ],
+    targets: [
+      {
+        id: 't-en',
+        projectId: 'proj-1001',
+        languageCode: 'en',
+        status: 'completed',
+        progress: 100,
+      },
+      {
+        id: 't-ja',
+        projectId: 'proj-1001',
+        languageCode: 'ja',
+        status: 'completed',
+        progress: 100,
+      },
+    ],
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1487528278747-ba99ed528ebc?auto=format&fit=crop&w=1200&q=80',
+    durationSeconds: 126,
   },
   {
     id: 'proj-1002',
     title: 'Educational Webinar Series',
-    sourceLanguage: 'Korean',
-    targetLanguages: ['English'],
+    sourceLanguage: 'en',
+    targetLanguages: ['ko', 'ja'],
     status: 'processing',
-    progress: 32,
     dueDate: '2025-02-28',
     assignedEditor: 'translator-luis',
     createdAt: '2025-01-20T09:00:00Z',
@@ -157,14 +191,32 @@ export const sampleProjects: ProjectDetail[] = [
         sizeMb: 256,
       },
     ],
+    targets: [
+      {
+        id: 't-ko',
+        projectId: 'proj-1002',
+        languageCode: 'ko',
+        status: 'processing',
+        progress: 50,
+      },
+      {
+        id: 't-ja',
+        projectId: 'proj-1002',
+        languageCode: 'ja',
+        status: 'processing',
+        progress: 50,
+      },
+    ],
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1487528278747-ba99ed528ebc?auto=format&fit=crop&w=1200&q=80',
+    durationSeconds: 226,
   },
   {
     id: 'proj-1003',
     title: 'Creator Success Stories',
-    sourceLanguage: 'Japanese',
-    targetLanguages: ['English', 'Korean'],
-    status: 'review',
-    progress: 88,
+    sourceLanguage: 'ja',
+    targetLanguages: ['ko', 'en'],
+    status: 'editing',
     dueDate: '2025-01-31',
     assignedEditor: 'translator-erin',
     createdAt: '2025-01-05T14:25:00Z',
@@ -191,5 +243,24 @@ export const sampleProjects: ProjectDetail[] = [
         sizeMb: 0.4,
       },
     ],
+    targets: [
+      {
+        id: 't-ko',
+        projectId: 'proj-1003',
+        languageCode: 'ko',
+        status: 'completed',
+        progress: 100,
+      },
+      {
+        id: 't-en',
+        projectId: 'proj-1003',
+        languageCode: 'en',
+        status: 'processing',
+        progress: 50,
+      },
+    ],
+    thumbnailUrl:
+      'https://images.unsplash.com/photo-1487528278747-ba99ed528ebc?auto=format&fit=crop&w=1200&q=80',
+    durationSeconds: 326,
   },
 ]

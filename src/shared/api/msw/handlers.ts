@@ -1,7 +1,8 @@
-import { HttpResponse, http } from 'msw'
+﻿import { HttpResponse, http } from 'msw'
 
 import type { ExampleItem, ExampleItemPayload } from '../../../entities/example/types'
 import { sampleGlossaries } from '../../../entities/glossary/types'
+import { sampleLanguages } from '../../../entities/language/types'
 import { sampleProjects } from '../../../entities/project/types'
 import { sampleSegments } from '../../../entities/segment/types'
 import { sampleVoices } from '../../../entities/voice-sample/types'
@@ -9,7 +10,7 @@ import { sampleVoices } from '../../../entities/voice-sample/types'
 let exampleItems: ExampleItem[] = [
   {
     id: 'example-1',
-    name: '샘플 온보딩 플로우',
+    name: 'Sample Onboarding Flow',
     owner: 'Evelyn',
     status: 'in-progress',
     createdAt: new Date().toISOString(),
@@ -17,7 +18,7 @@ let exampleItems: ExampleItem[] = [
   },
   {
     id: 'example-2',
-    name: '더빙 가이드 문서화',
+    name: 'Dubbing Guide Documentation',
     owner: 'Marcus',
     status: 'draft',
     createdAt: new Date().toISOString(),
@@ -33,10 +34,12 @@ export const handlers = [
       sourceLanguage: project.sourceLanguage,
       targetLanguages: project.targetLanguages,
       status: project.status,
-      progress: project.progress,
       dueDate: project.dueDate,
       assignedEditor: project.assignedEditor,
       createdAt: project.createdAt,
+      thumbnailUrl: project.thumbnailUrl,
+      durationSeconds: project.durationSeconds,
+      targets: project.targets,
     }))
 
     return HttpResponse.json({ items })
@@ -58,13 +61,11 @@ export const handlers = [
 
     return HttpResponse.json({
       projectId: project.id,
-      targetLanguages: project.targetLanguages,
       segments: sampleSegments,
       voices: sampleVoices,
       glossaries: sampleGlossaries,
       playback: {
         duration: project.assets.at(0)?.duration ?? 0,
-        activeLanguage: project.targetLanguages[0],
         playbackRate: 1,
       },
     })
@@ -109,5 +110,9 @@ export const handlers = [
     const id = params.id as string
     exampleItems = exampleItems.filter((item) => item.id !== id)
     return HttpResponse.json({ success: true })
+  }),
+
+  http.get('/api/languages', () => {
+    return HttpResponse.json({ items: sampleLanguages })
   }),
 ]
