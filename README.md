@@ -17,6 +17,8 @@
    nvm use
    corepack enable && corepack prepare pnpm@9.12.2 --activate
    ```
+
+   - Windows nvm은 `.nvmrc`를 자동으로 읽지 않으므로 프로젝트 폴더에 들어올 때마다 `nvm use 20.17.0`을 직접 실행해 Node 버전을 맞춰 주세요.
 2. **환경 변수 설정**
    ```bash
    cp .env.example .env
