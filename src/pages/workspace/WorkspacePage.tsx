@@ -80,7 +80,7 @@ export default function WorkspacePage() {
   }
 
   return (
-    <div className="mx-auto grid w-full gap-10 px-12 py-12">
+    <div className="mx-auto grid w-full max-w-7xl gap-10 px-12 py-12">
       <section className="flex-1 space-y-10">
         <UploadCard />
 

@@ -19,8 +19,7 @@ export function AppHeader() {
   const signOut = useAuthStore((state) => state.signOut)
   const location = useLocation()
   const navigate = useNavigate()
-  const isWideLayout =
-    location.pathname.startsWith('/workspace') || location.pathname.startsWith('/editor')
+  const isWideLayout = location.pathname.startsWith('/editor')
   const containerWidthClass = isWideLayout ? 'max-w-[1920px]' : 'max-w-7xl'
   const initials =
     userName
