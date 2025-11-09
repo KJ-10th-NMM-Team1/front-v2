@@ -5,7 +5,6 @@ import pluginReactHooks from 'eslint-plugin-react-hooks'
 import pluginTailwindcss from 'eslint-plugin-tailwindcss'
 import pluginTestingLibrary from 'eslint-plugin-testing-library'
 import pluginUnusedImports from 'eslint-plugin-unused-imports'
-import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
@@ -36,9 +35,9 @@ export default tseslint.config(
         project: ['./tsconfig.app.json', './tsconfig.node.json'],
         tsconfigRootDir: import.meta.dirname,
       },
-      globals: {
-        ...globals.browser,
-        ...globals.node,
+      env: {
+        browser: true,
+        node: true,
       },
     },
     plugins: {
