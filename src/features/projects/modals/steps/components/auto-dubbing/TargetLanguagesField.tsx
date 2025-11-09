@@ -27,7 +27,7 @@ export function TargetLanguagesField({
   return (
     <div className="space-y-3">
       <Label>타겟 언어</Label>
-      <div className="space-y-3">
+      <div className="">
         <div className="border-surface-4 flex flex-col gap-3 rounded-2xl border border-dashed p-4">
           <div className="flex flex-col gap-3 md:flex-row">
             <div className="flex-1">
@@ -84,6 +84,7 @@ export function TargetLanguagesField({
             )}
           </div>
         </div>
+
         <ValidationMessage message={error} />
       </div>
     </div>

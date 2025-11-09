@@ -21,7 +21,7 @@ export function SourceLanguageField({
   error,
 }: SourceLanguageFieldProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       <div className="flex items-center gap-3">
         <Checkbox
           checked={detectAutomatically}
@@ -46,7 +46,7 @@ export function SourceLanguageField({
               ))}
             </SelectContent>
           </Select>
-          <ValidationMessage message={error} />
+          {/* <ValidationMessage message={error} /> */}
         </div>
       ) : null}
     </div>

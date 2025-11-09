@@ -11,10 +11,12 @@ type TitleFieldProps = {
 
 export function TitleField({ registration, error }: TitleFieldProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       <Label htmlFor="episode-title">에피소드 제목</Label>
-      <Input id="episode-title" placeholder="예) iPad 출시 기념 라이브 방송" {...registration} />
-      <ValidationMessage message={error} />
+      <div>
+        <Input id="episode-title" placeholder="예) 크래프톤 정글 홍보 영상" {...registration} />
+        <ValidationMessage message={error} />
+      </div>
     </div>
   )
 }

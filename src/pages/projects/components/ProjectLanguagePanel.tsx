@@ -94,8 +94,10 @@ function LanguagePreview({
           <video
             key={`${language}-${version}`}
             controls
+            autoPlay={false}
             className="h-96 w-full bg-black object-cover"
             src={videoSrc}
+            preload="metadata"
           >
             <track kind="captions" />
           </video>

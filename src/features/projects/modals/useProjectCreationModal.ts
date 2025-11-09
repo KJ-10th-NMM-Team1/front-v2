@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { uploadFile } from '@/features/projects/api/storageApi'
 import { useCreateProjectMutation } from '@/features/projects/hooks/useProjects'
@@ -10,6 +10,7 @@ import {
 import { trackEvent } from '@/shared/lib/analytics'
 import { useUiStore } from '@/shared/store/useUiStore'
 
+import { useUploadProgressController } from './hooks/useUploadProgressController'
 import type { AutoDubbingSettingsValues } from './steps/AutoDubbingSettingsStep'
 import type { ProjectCreationDraft, SourceSelectionResult } from './types'
 
@@ -52,42 +53,75 @@ export function useProjectCreationModal() {
   }, [draft.fileName, draft.fileSize])
 
   const showToast = useUiStore((state) => state.showToast)
-  const handleFileUpload = async (projectId: string, file: File) => {
-    const { upload_url, fields, object_key } = await prepareUploadMutation.mutateAsync({
-      projectId,
-      fileName: file.name,
-      contentType: file.type || 'application/octet-stream',
-    })
-    await uploadFile({
-      uploadUrl: upload_url,
-      fields,
-      file,
-    })
-    await finalizeUploadMutation.mutateAsync({
-      projectId,
-      objectKey: object_key,
+  const finishCreation = useCallback(() => {
+    setTimeout(() => {
+      closeProjectCreation()
+      showToast({
+        id: 'example-create-success',
+        title: '프로젝트 생성 완료',
+        autoDismiss: 2500,
+      })
+    }, 400)
+  }, [closeProjectCreation, showToast])
+  const { uploadProgress, updateProgress, handleProgressError, startTrackingProject } =
+    useUploadProgressController({
+      projectCreationOpen: projectCreation.open,
+      onComplete: finishCreation,
     })
 
-    closeProjectCreation()
-    showToast({
-      id: 'example-create-success',
-      title: '프로젝트 생성 완료',
-      autoDismiss: 2500,
-    })
+  const handleFileUpload = async (projectId: string, file: File) => {
+    try {
+      updateProgress('preparing', 10)
+      const { upload_url, fields, object_key } = await prepareUploadMutation.mutateAsync({
+        projectId,
+        fileName: file.name,
+        contentType: file.type || 'application/octet-stream',
+      })
+
+      updateProgress('uploading', 35)
+      await uploadFile({
+        uploadUrl: upload_url,
+        fields,
+        file,
+      })
+
+      updateProgress('finalizing', 85)
+      await finalizeUploadMutation.mutateAsync({
+        projectId,
+        objectKey: object_key,
+      })
+
+      updateProgress('done', 100)
+      finishCreation()
+    } catch (error) {
+      console.error('Failed to upload file', error)
+      handleProgressError('파일 업로드에 실패했습니다. 잠시 후 다시 시도해주세요.')
+      showToast({
+        id: 'example-create-error',
+        title: '프로젝트 생성 실패',
+        description: '업로드 중 오류가 발생했습니다.',
+      })
+    }
   }
 
   const handleRegisterYoutube = async (projectId: string, draft: ProjectCreationDraft) => {
-    await registerYoutubeSourceMutation.mutateAsync({
-      projectId,
-      youtubeUrl: draft.youtubeUrl as string,
-    })
-
-    closeProjectCreation()
-    showToast({
-      id: 'example-create-success',
-      title: '프로젝트 생성 완료',
-      autoDismiss: 2500,
-    })
+    try {
+      updateProgress('processing', 1, 'YouTube 링크 확인 중...')
+      // Job만 큐잉함
+      await registerYoutubeSourceMutation.mutateAsync({
+        projectId,
+        youtubeUrl: draft.youtubeUrl as string,
+      })
+      updateProgress('processing', 5, 'YouTube 콘텐츠를 불러오는 중...')
+    } catch (error) {
+      console.error('Failed to register YouTube source', error)
+      handleProgressError('YouTube 소스 등록에 실패했습니다.')
+      showToast({
+        id: 'example-create-error',
+        title: '프로젝트 생성 실패',
+        description: 'YouTube 링크를 다시 확인한 뒤 재시도해주세요.',
+      })
+    }
   }
 
   const handleSourceSubmit = (values: SourceSelectionResult) => {
@@ -121,10 +155,10 @@ export function useProjectCreationModal() {
         onSuccess(project) {
           const projectId = project.project_id
           if (nextDraft.sourceType === 'file') {
-            const fileToUpload = nextDraft.file
-            if (!fileToUpload) return
-            void handleFileUpload(projectId, fileToUpload)
+            if (!nextDraft.file) return
+            void handleFileUpload(projectId, nextDraft.file)
           } else if (nextDraft.sourceType === 'youtube') {
+            startTrackingProject(projectId)
             void handleRegisterYoutube(projectId, nextDraft)
           }
         },
@@ -140,6 +174,7 @@ export function useProjectCreationModal() {
   const handleBackToSource = () => setProjectCreationStep('source')
 
   return {
+    uploadProgress,
     projectCreation,
     closeProjectCreation,
     isSourceStep,

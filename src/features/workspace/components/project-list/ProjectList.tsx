@@ -16,7 +16,7 @@ export function ProjectList({ projects }: ProjectListProps) {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-6">
+    <div className="grid grid-cols-3 gap-8 xl:grid-cols-4">
       {projects.map((project) => (
         <EpisodeCard key={project.id} project={project} />
       ))}

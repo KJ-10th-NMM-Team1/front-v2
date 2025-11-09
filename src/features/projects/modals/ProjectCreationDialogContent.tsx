@@ -5,13 +5,14 @@ import {
   type AutoDubbingSettingsValues,
 } from './steps/AutoDubbingSettingsStep'
 import { SourceSelectionStep } from './steps/SourceSelectionStep'
-import type { ProjectCreationDraft, SourceSelectionResult } from './types'
+import type { ProjectCreationDraft, SourceSelectionResult, UploadProgressState } from './types'
 
 type ProjectCreationDialogContentProps = {
   isSourceStep: boolean
   isDetailsStep: boolean
   draft: ProjectCreationDraft
   recentUploadSummary: string | null
+  uploadProgress: UploadProgressState
   onSourceSubmit: (values: SourceSelectionResult) => void
   onSourceCancel: () => void
   onDetailsSubmit: (values: AutoDubbingSettingsValues) => void
@@ -23,6 +24,7 @@ export function ProjectCreationDialogContent({
   isDetailsStep,
   draft,
   recentUploadSummary,
+  uploadProgress,
   onSourceSubmit,
   onSourceCancel,
   onDetailsSubmit,
@@ -54,6 +56,7 @@ export function ProjectCreationDialogContent({
             speakerCount: draft.speakerCount,
           }}
           draft={draft}
+          uploadProgress={uploadProgress}
           onBack={onBackToSource}
           onSubmit={onDetailsSubmit}
         />

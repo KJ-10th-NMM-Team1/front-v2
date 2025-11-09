@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { trackEvent } from '@/shared/lib/analytics'
 import { Button } from '@/shared/ui/Button'
 import { DialogDescription, DialogTitle } from '@/shared/ui/Dialog'
+import { Progress } from '@/shared/ui/Progress'
 
-import type { ProjectCreationDraft } from '../types'
+import { stageMessageMap } from '../hooks/useUploadProgressController'
+import type { ProjectCreationDraft, UploadProgressState } from '../types'
 
 import { SourceLanguageField } from './components/auto-dubbing/SourceLanguageField'
 import { AudioSpeakerCountField } from './components/auto-dubbing/SpeakerCountField'
@@ -35,6 +38,7 @@ export type AutoDubbingSettingsValues = z.infer<typeof autoDubbingSettingsSchema
 type AutoDubbingSettingsStepProps = {
   initialValues: AutoDubbingSettingsValues
   draft: ProjectCreationDraft
+  uploadProgress: UploadProgressState
   onBack: () => void
   onSubmit: (values: AutoDubbingSettingsValues) => void
 }
@@ -42,6 +46,7 @@ type AutoDubbingSettingsStepProps = {
 export function AutoDubbingSettingsStep({
   initialValues,
   draft,
+  uploadProgress,
   onBack,
   onSubmit,
 }: AutoDubbingSettingsStepProps) {
@@ -115,17 +120,23 @@ export function AutoDubbingSettingsStep({
     )
   }
 
+  const isProcessing =
+    uploadProgress.stage !== 'idle' &&
+    uploadProgress.stage !== 'done' &&
+    uploadProgress.stage !== 'error'
+  const progressLabel = uploadProgress.message ?? stageMessageMap[uploadProgress.stage]
+
   return (
     <form
       onSubmit={(event) => {
         void submit(event)
       }}
-      className="space-y-5"
+      className="space-y-3"
+      aria-busy={isProcessing}
     >
       <DialogTitle>2단계 — 자동 더빙 설정</DialogTitle>
       <DialogDescription>
-        제목과 언어, 화자 수를 지정하면 에피소드 템플릿이 생성됩니다. 하단 요약으로 설정 결과를 즉시
-        확인하세요.
+        제목과 언어, 화자 수를 지정하면 에피소드 자동 번역을 시작합니다.
       </DialogDescription>
 
       <TitleField registration={register('title')} error={errors.title?.message} />
@@ -162,12 +173,33 @@ export function AutoDubbingSettingsStep({
         speakerCount={speakerCount}
       />
 
+      {uploadProgress.stage !== 'idle' ? (
+        <div className="border-surface-4 bg-surface-1/50 rounded-3xl border border-dashed p-4">
+          <Progress value={uploadProgress.progress} label={progressLabel} />
+          {uploadProgress.stage === 'error' ? (
+            <p className="text-danger mt-2 text-xs">문제가 지속되면 잠시 후 다시 시도해주세요.</p>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="flex justify-between gap-3 pt-4">
-        <Button variant="ghost" type="button" onClick={onBack} disabled={isSubmitting}>
+        <Button
+          variant="ghost"
+          type="button"
+          onClick={onBack}
+          disabled={isSubmitting || isProcessing}
+        >
           이전
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
-          에피소드 생성
+        <Button type="submit" disabled={isSubmitting || isProcessing}>
+          {isProcessing ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              처리 중...
+            </>
+          ) : (
+            '에피소드 생성'
+          )}
         </Button>
       </div>
     </form>
@@ -199,13 +231,14 @@ function SettingsSummary({
   return (
     <div className="border-surface-4 bg-surface-2 rounded-3xl border p-5">
       <p className="text-muted text-xs font-semibold uppercase tracking-[0.3em]">설정 요약</p>
-      <div className="mt-3 space-y-2 text-sm">
+      <div className="mt-3 space-y-1 text-sm">
         <SummaryRow label="제목" value={title || '제목 미입력'} />
         <SummaryRow label="소스" value={sourceSummary} />
         <SummaryRow label="원어" value={sourceLanguage} />
         <SummaryRow label="타겟 언어" value={targetLanguages.join(', ') || '미선택'} />
         <SummaryRow label="화자 수" value={`${speakerCount}명`} />
       </div>
+
       <p className="text-muted mt-3 text-xs">
         최종 산출물은 선택한 타겟 언어별 더빙 영상(+필요 시 자막)으로 생성됩니다.
       </p>

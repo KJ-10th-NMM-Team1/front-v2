@@ -5,6 +5,7 @@ import { useProjectCreationModal } from './useProjectCreationModal'
 
 export function ProjectCreationModal() {
   const {
+    uploadProgress,
     projectCreation,
     closeProjectCreation,
     isSourceStep,
@@ -30,6 +31,7 @@ export function ProjectCreationModal() {
         isDetailsStep={isDetailsStep}
         draft={draft}
         recentUploadSummary={recentUploadSummary}
+        uploadProgress={uploadProgress}
         onSourceSubmit={handleSourceSubmit}
         onSourceCancel={closeProjectCreation}
         onDetailsSubmit={handleDetailsSubmit}

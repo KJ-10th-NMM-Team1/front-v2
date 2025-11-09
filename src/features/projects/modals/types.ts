@@ -16,3 +16,19 @@ export type ProjectCreationDraft = {
   targetLanguages: string[]
   speakerCount: number
 }
+
+export type UploadStage =
+  | 'idle'
+  | 'preparing'
+  | 'uploading'
+  | 'finalizing'
+  | 'processing'
+  | 'downloading'
+  | 'done'
+  | 'error'
+
+export type UploadProgressState = {
+  stage: UploadStage
+  progress: number
+  message?: string
+}
