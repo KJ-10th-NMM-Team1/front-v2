@@ -35,10 +35,6 @@ export default tseslint.config(
         project: ['./tsconfig.app.json', './tsconfig.node.json'],
         tsconfigRootDir: import.meta.dirname,
       },
-      env: {
-        browser: true,
-        node: true,
-      },
     },
     plugins: {
       react: pluginReact,
