@@ -4,7 +4,6 @@ import type { ProjectAsset, ProjectDetail } from '@/entities/project/types'
 import { trackEvent } from '@/shared/lib/analytics'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/Button'
-import { TabsContent, TabsList, TabsRoot, TabsTrigger } from '@/shared/ui/Tabs'
 
 type ProjectLanguagePanelProps = {
   project: ProjectDetail
@@ -24,27 +23,22 @@ export function ProjectLanguagePanel({
   assetsByLanguage,
 }: ProjectLanguagePanelProps) {
   return (
-    <div className="border-surface-3 bg-surface-1 space-y-6 rounded-3xl border p-6 shadow-soft">
-      <TabsRoot value={activeLanguage} onValueChange={onLanguageChange}>
-        <TabsList className="flex flex-wrap gap-2">
-          {project.targetLanguages.map((lang) => (
-            <TabsTrigger key={lang} value={lang}>
-              {lang}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {project.targetLanguages.map((lang) => (
-          <TabsContent key={lang} value={lang}>
-            <LanguagePreview
-              language={lang}
-              assets={assetsByLanguage[lang] ?? []}
-              version={version}
-              onVersionChange={onVersionChange}
-              videoSource={project.video_source}
-            />
-          </TabsContent>
-        ))}
-      </TabsRoot>
+    <div className="border-surface-3 bg-surface-1 space-y-3 rounded-3xl border p-6 shadow-soft">
+      {project.targetLanguages.map((lang) => (
+        <div key={lang}>
+          <LanguagePreview
+            language={lang}
+            assets={assetsByLanguage[lang] ?? []}
+            version={version}
+            onVersionChange={onVersionChange}
+            videoSource={project.video_source}
+            sourceLanguage={project.sourceLanguage}
+            targetLanguages={project.targetLanguages}
+            onLanguageChange={onLanguageChange}
+            activeLanguage={activeLanguage}
+          />
+        </div>
+      ))}
     </div>
   )
 }
@@ -55,6 +49,10 @@ type LanguagePreviewProps = {
   version: 'original' | 'translated'
   onVersionChange: (version: 'original' | 'translated') => void
   videoSource?: string
+  sourceLanguage: string
+  targetLanguages: string[]
+  onLanguageChange: (language: string) => void
+  activeLanguage: string
 }
 
 function LanguagePreview({
@@ -63,31 +61,47 @@ function LanguagePreview({
   version,
   onVersionChange,
   videoSource,
+  sourceLanguage,
+  targetLanguages,
+  onLanguageChange,
+  activeLanguage,
 }: LanguagePreviewProps) {
+  const languageButtons = [sourceLanguage, ...targetLanguages].map((lang) => ({
+    label: lang === sourceLanguage ? `${lang}(원본)` : lang,
+    language: lang,
+  }))
+
   const selectedAsset = assets.find((asset) => asset.type === 'video')
   const translatedSource = selectedAsset?.url
   const previewSource = version === 'original' ? videoSource : (translatedSource ?? videoSource)
   const videoSrc = `/api/storage/media/${previewSource}`
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button
-            variant={version === 'original' ? 'secondary' : 'ghost'}
-            size="sm"
-            onClick={() => onVersionChange('original')}
-          >
-            원본
-          </Button>
-          <Button
-            variant={version === 'translated' ? 'secondary' : 'ghost'}
-            size="sm"
-            onClick={() => onVersionChange('translated')}
-          >
-            번역
-          </Button>
-        </div>
+    <div className="space-y-5">
+      <div className="flex flex-wrap gap-2">
+        {languageButtons.map(({ label, language: buttonLang }) => {
+          const isActive = buttonLang === activeLanguage
+          const buttonClass = cn('rounded-full px-3 py-1 text-xs transition')
+          return (
+            <Button
+              key={label}
+              variant={isActive ? 'primary' : 'ghost'}
+              size="sm"
+              className={buttonClass}
+              aria-pressed={isActive}
+              onClick={() => {
+                onLanguageChange(buttonLang)
+                if (buttonLang === sourceLanguage) {
+                  onVersionChange('original')
+                } else {
+                  onVersionChange('translated')
+                }
+              }}
+            >
+              {label}
+            </Button>
+          )
+        })}
       </div>
       <div className="border-surface-3 bg-surface-1 relative overflow-hidden rounded-3xl border">
         {previewSource ? (

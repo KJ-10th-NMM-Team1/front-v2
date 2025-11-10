@@ -79,7 +79,7 @@ export default function ProjectDetailPage() {
         <ProjectLanguagePanel
           project={project}
           activeLanguage={activeLanguage}
-          onLanguageChange={(value) => setLanguage(value)}
+          onLanguageChange={setLanguage}
           version={version}
           onVersionChange={setVersion}
           assetsByLanguage={assetsByLanguage}
